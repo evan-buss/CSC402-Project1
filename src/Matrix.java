@@ -1,11 +1,12 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Matrix {
   /**
    * Two dimensional ArrayList of Integers holding the adjacency matrix
    */
-  private final ArrayList<ArrayList<Integer>> matrix = new ArrayList<>();
+  private final List<List<Integer>> matrix = new ArrayList<>();
 
   /**
    * Calls the loadMatrix function on the file name
@@ -42,7 +43,7 @@ public class Matrix {
       String line;
       while ((line = reader.readLine()) != null) {
         // Vector of ints that represents a row in the matrix
-        ArrayList<Integer> row = new ArrayList<>();
+        List<Integer> row = new ArrayList<>();
         for (String el : line.split(" ")) {
           // Add each element to the row
           row.add(Integer.parseInt(el));
@@ -81,10 +82,9 @@ public class Matrix {
     StringBuilder sb = new StringBuilder();
     // Create the column labels
     char label = 'A';
-    sb.append("  ");
+    sb.append("     ");
     for (int i = 0; i < matrix.get(0).size(); i++) {
-      sb.append(label);
-      sb.append(" ");
+      sb.append(String.format("%-5c", label));
       label++; // Use character addition to increment to next letter
     }
     sb.append("\n");
@@ -92,12 +92,10 @@ public class Matrix {
     // Loop through the matrix and add each row to the string output
     // Leftmost column is the row label letter
     label = 'A';
-    for (ArrayList<Integer> row : matrix) {
-      sb.append(label);
-      sb.append(" ");
+    for (List<Integer> row : matrix) {
+      sb.append(String.format("%-5c", label));
       for (Integer element : row) {
-        sb.append(element);
-        sb.append(" ");
+        sb.append(String.format("%-5d", element));
       }
       sb.append("\n");
       label++;

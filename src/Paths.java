@@ -1,14 +1,11 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Paths {
   /**
    * Map containing the path length as the key and a two dimensional
    * character List as the value.
    */
-  private static Map<Integer, List<List<Character>>> map =
+  private static final Map<Integer, List<List<Character>>> map =
       new HashMap<>();
 
   /**
@@ -35,10 +32,33 @@ public class Paths {
 
       System.out.println("Matrix:");
       System.out.println(matrix.toString());
+
+      // Convert vertex chars to uppercase
+      args[1] = args[1].toUpperCase();
+      args[2] = args[2].toUpperCase();
+
       System.out.println("Starting Vertex: " + args[1]);
       System.out.println("Target Vertex: " + args[2] + "\n");
 
-      traverse(args[1].charAt(0) - 'A', 0, args[2].charAt(0),
+      // Validate the starting index
+      if (args[1].charAt(0) - 'A' >= matrix.size() || args[1].charAt(0) - 'A' < 0) {
+        System.out.println("Invalid Starting Vertex. Exiting");
+        System.exit(-1);
+      }
+
+      // Validate the target index
+      if (args[2].charAt(0) - 'A' >= matrix.size() || args[2].charAt(0) - 'A' < 0) {
+        System.out.println("Invalid Target Vertex. Exiting");
+        System.exit(-1);
+      }
+
+      // Call the recursive algorithm at the index of the starting vertex
+      // Starting total is initialized to 0
+      // Target vertex remains the same
+      // Path container is an empty ArrayList
+      //TODO: I can drop the target vertex because it never changes?
+      // Maybe set to a global variable?
+      traverse(args[1].charAt(0) - 'A', args[2].charAt(0), 0,
           new ArrayList<>());
 
       System.out.println(mapToString());
@@ -61,11 +81,10 @@ public class Paths {
    * @param target       Target node to be traversed to.
    * @param containerRef Container storing the path sequentially.
    */
-  public static void traverse(int node, int total, char target,
+  public static void traverse(int node, char target, int total,
                               List<Character> containerRef) {
     // Get a copy of the containerRef, otherwise changes affect all instances
     List<Character> container = new ArrayList<>(containerRef);
-    // System.out.println(container);
 
     // Generate nodeLabel (A, B, C, ...) using character arithmetic
     char nodeLabel = (char) ('A' + node);
@@ -84,7 +103,7 @@ public class Paths {
       int edgeWeight;
       if ((edgeWeight = matrix.get(node, i)) > 0) { // Edge found
         // Navigate to new node via that edge. Increment total by edge weight
-        traverse(i, total + edgeWeight, target, container);
+        traverse(i, target, total + edgeWeight, container);
       }
     }
   }
@@ -124,9 +143,20 @@ public class Paths {
    */
   private static String mapToString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("Length   Path\n");
-    sb.append("***********************\n");
-    map.forEach((k, v) -> {
+    sb.append("Discovered Paths\n");
+    sb.append("****************\n");
+
+    // Map to hold sorted version of path map
+    Map<Integer, List<List<Character>>> sortedMap = new LinkedHashMap<>();
+
+    // Use Java stream to sort the existing map by key from smallest to largest
+    // Put the elements into the sortedMap. This preserves the order.
+    map.entrySet().stream()
+        .sorted(Map.Entry.comparingByKey())
+        .forEachOrdered(elt -> sortedMap.put(elt.getKey(), elt.getValue()));
+
+    // Loop through sorted map. Generating a stylized string.
+    sortedMap.forEach((k, v) -> {
       sb.append(k);
       sb.append(":\n");
       v.forEach(list -> {
