@@ -5,7 +5,7 @@ public class Paths {
    * Map containing the path length as the key and a two dimensional
    * character List as the value.
    */
-  private static final Map<Integer, List<List<Character>>> map =
+  private static final Map<Integer, List<List<Integer>>> map =
       new HashMap<>();
 
   /**
@@ -15,57 +15,91 @@ public class Paths {
   private static Matrix matrix = null;
 
   /**
-   * Creates new matrix from file name given as first argument. Finds all
-   * possible paths from the "Starting Node" to the "Target Node" of the matrix.
-   *
-   * @param args <br>
-   *             1: File Name - name of file containing Directed Graph Matrix
-   *             <br>
-   *             2: Starting Node - letter of starting node (A, B, C, ...)
-   *             <br>
-   *             3: Target Node - letter of target node (A, B, C, ...)
+   * Calls the prompt function
    */
   public static void main(String[] args) {
-    if (args.length == 3) {
-      // Load matrix from file
-      matrix = new Matrix(args[0]);
+    prompt();
+  }
 
+  /**
+   * Prompt the user to enter program information.
+   * <p>
+   * The prompt will loop until the user enters an exit command allowing them
+   * to enter multiple matrices and starting/target vertices.
+   */
+  private static void prompt() {
+    Scanner keyboard = new Scanner(System.in); // Scanner to console input
+    int startVertex, targetVertex, matrixSize;
+
+    while (true) {
+      // Get the file name from user input
+      System.out.print("File Name (Q to quit): ");
+      String fileName = keyboard.nextLine();
+      if (fileName.toLowerCase().equals("q")) { // Quit if user enters "Q/q"
+        break;
+      }
+      // Attempt to load matrix at the given file name
+      // Restart the loop if invalid file given
+      try {
+        matrix = new Matrix(fileName);
+        matrixSize = matrix.size();
+      } catch (Exception ex) {
+        System.err.println("File Could Not Be Loaded");
+        continue;
+      }
+
+      // Display the loaded matrix
       System.out.println("Matrix:");
       System.out.println(matrix.toString());
 
-      // Convert vertex chars to uppercase
-      args[1] = args[1].toUpperCase();
-      args[2] = args[2].toUpperCase();
-
-      System.out.println("Starting Vertex: " + args[1]);
-      System.out.println("Target Vertex: " + args[2] + "\n");
-
-      // Validate the starting index
-      if (args[1].charAt(0) - 'A' >= matrix.size() || args[1].charAt(0) - 'A' < 0) {
-        System.out.println("Invalid Starting Vertex. Exiting");
-        System.exit(-1);
+      // Get the starting vertex
+      System.out.println("Negative vertex values exit the program.");
+      System.out.print("Start Vertex (0 - " + (matrixSize - 1) +
+          "): ");
+      startVertex = keyboard.nextInt();
+      if (startVertex < 0) {
+        System.out.println("Exiting Program...");
+        break;
       }
 
-      // Validate the target index
-      if (args[2].charAt(0) - 'A' >= matrix.size() || args[2].charAt(0) - 'A' < 0) {
-        System.out.println("Invalid Target Vertex. Exiting");
-        System.exit(-1);
+      // Ensure that the given target is within the bounds, otherwise there
+      // will be index errors.
+      if (startVertex > matrixSize - 1) {
+        System.err.println("Index is too large. Try again.");
+        keyboard.nextLine();
+        continue; // restart loop
       }
+
+      // Get the target vertex
+      System.out.print("Target Vertex (0 - " + (matrixSize - 1)
+          + "): ");
+      targetVertex = keyboard.nextInt();
+      if (targetVertex < 0) {
+        System.out.println("Exiting Program...");
+        break;
+      }
+
+      // Ensure that the given target is within the bounds, otherwise there
+      // will be index errors.
+      if (targetVertex > matrixSize - 1) {
+        System.err.println("Index is too large. Try again.");
+        keyboard.nextLine();
+        continue; // restart loop
+      }
+      keyboard.nextLine();
 
       // Call the recursive algorithm at the index of the starting vertex
       // Starting total is initialized to 0
       // Target vertex remains the same
       // Path container is an empty ArrayList
-      //TODO: I can drop the target vertex because it never changes?
-      // Maybe set to a global variable?
-      traverse(args[1].charAt(0) - 'A', args[2].charAt(0), 0,
+      traverse(startVertex, targetVertex, 0,
           new ArrayList<>());
 
+      // Display the path maps
       System.out.println(mapToString());
-    } else {
-      System.out.println("Usage: java Paths [fileName] [Starting Node] " +
-          "[Target Node]");
-      System.exit(-1);
+
+      // Reset the map before loading next run
+      map.clear();
     }
   }
 
@@ -81,21 +115,20 @@ public class Paths {
    * @param target       Target node to be traversed to.
    * @param containerRef Container storing the path sequentially.
    */
-  public static void traverse(int node, char target, int total,
-                              List<Character> containerRef) {
-    // Get a copy of the containerRef, otherwise changes affect all instances
-    List<Character> container = new ArrayList<>(containerRef);
+  public static void traverse(int node, int target, int total,
+                              List<Integer> containerRef) {
 
-    // Generate nodeLabel (A, B, C, ...) using character arithmetic
-    char nodeLabel = (char) ('A' + node);
+    // Get a copy of the containerRef, otherwise changes affect all instances
+    List<Integer> container = new ArrayList<>(containerRef);
+
     // Container already has label = Cycle = No Path to Target
-    if (container.contains(nodeLabel)) return;
-    else if (nodeLabel == target) { // We have reached the target node
-      container.add(nodeLabel);     // Add the target node to the container
-      addToMap(total, container);   // Add length and path to map
+    if (container.contains(node)) return;
+    else if (node == target) {    // We have reached the target node
+      container.add(node);        // Add the target node to the container
+      addToMap(total, container); // Add total length and path to map
       return;
     } else {
-      container.add(nodeLabel); // Otherwise, just add the label to path.
+      container.add(node); // Otherwise, just add the label to path.
     }
 
     // Loop through the current node's row, navigating to each element
@@ -117,7 +150,7 @@ public class Paths {
    * @param total     The length of the path. It is used as the map key.
    * @param container The path in List form.
    */
-  private static void addToMap(int total, List<Character> container) {
+  private static void addToMap(int total, List<Integer> container) {
     if (map.containsKey(total)) {
       // Map already contains an entry, so add to existing List
       if (!map.get(total).contains(container)) {
@@ -127,7 +160,7 @@ public class Paths {
       }
     } else {
       // Map doesn't contain entry. Create new 2D List
-      List<List<Character>> temp = new ArrayList<>();
+      List<List<Integer>> temp = new ArrayList<>();
       temp.add(container);
       map.put(total, temp);
     }
@@ -143,11 +176,12 @@ public class Paths {
    */
   private static String mapToString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("Discovered Paths\n");
+    sb.append("\nDiscovered Paths\n");
     sb.append("****************\n");
 
     // Map to hold sorted version of path map
-    Map<Integer, List<List<Character>>> sortedMap = new LinkedHashMap<>();
+    // (LinkedHashMap preserves insertion order)
+    Map<Integer, List<List<Integer>>> sortedMap = new LinkedHashMap<>();
 
     // Use Java stream to sort the existing map by key from smallest to largest
     // Put the elements into the sortedMap. This preserves the order.
@@ -157,6 +191,7 @@ public class Paths {
 
     // Loop through sorted map. Generating a stylized string.
     sortedMap.forEach((k, v) -> {
+      sb.append("Length ");
       sb.append(k);
       sb.append(":\n");
       v.forEach(list -> {

@@ -1,4 +1,6 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,7 @@ public class Matrix {
    * @param fileName The name of the file containing the adjacency matrix of
    *                 the graph.
    */
-  public Matrix(String fileName) {
+  public Matrix(String fileName) throws Exception {
     loadMatrix(fileName); //  Load the text file into the matrix object
   }
 
@@ -36,27 +38,18 @@ public class Matrix {
    * @param fileName Name of the file containing the text representation of
    *                 the matrix
    */
-  private void loadMatrix(String fileName) {
-    try {
-      // Create a buffered reader to read from the given file name
-      BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        // Vector of ints that represents a row in the matrix
-        List<Integer> row = new ArrayList<>();
-        for (String el : line.split(" ")) {
-          // Add each element to the row
-          row.add(Integer.parseInt(el));
-        }
-
-        matrix.add(row); // Add each row to the matrix object
+  private void loadMatrix(String fileName) throws Exception {
+    // Create a buffered reader to read from the given file name
+    BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)));
+    String line;
+    while ((line = reader.readLine()) != null) {
+      // Vector of ints that represents a row in the matrix
+      List<Integer> row = new ArrayList<>();
+      for (String el : line.split(" ")) {
+        // Add each element to the row
+        row.add(Integer.parseInt(el));
       }
-    } catch (FileNotFoundException e) {
-      System.err.println("File not found");
-      e.printStackTrace();
-    } catch (IOException e) {
-      System.err.println("Error reading from file");
-      e.printStackTrace();
+      matrix.add(row); // Add each row to the matrix object
     }
   }
 
@@ -81,19 +74,19 @@ public class Matrix {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     // Create the column labels
-    char label = 'A';
-    sb.append("     ");
+    int label = 0;
+    sb.append("#     ");
     for (int i = 0; i < matrix.get(0).size(); i++) {
-      sb.append(String.format("%-5c", label));
+      sb.append(String.format("%-5d", label));
       label++; // Use character addition to increment to next letter
     }
-    sb.append("\n");
+    sb.append("\n\n");
 
     // Loop through the matrix and add each row to the string output
     // Leftmost column is the row label letter
-    label = 'A';
+    label = 0;
     for (List<Integer> row : matrix) {
-      sb.append(String.format("%-5c", label));
+      sb.append(String.format("%-6d", label));
       for (Integer element : row) {
         sb.append(String.format("%-5d", element));
       }
