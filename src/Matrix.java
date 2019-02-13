@@ -1,3 +1,20 @@
+/************************************************************/
+/* Author: Evan Buss                                        */
+/* Major: Computer Science                                  */
+/* Creation Date: February 10, 2019                         */
+/* Due Date: February 14, 2019                              */
+/* Course: CSC402 - Data Structures 2                       */
+/* Professor: Dr. Spiegel                                   */
+/* Assignment: Project #1                                   */
+/* Filename: Matrix.java                                    */
+/* Purpose:  Matrix reads in a matrix from a given text     */
+/*    file and converts it to an object that can be         */
+/*    accessed.                                             */
+/* Language: java (8)                                       */
+/* Compilation Command: java Path.java Matrix.java          */
+/* Execution Command: java Path                             */
+/************************************************************/
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,18 +30,18 @@ public class Matrix {
   /**
    * Calls the loadMatrix function on the file name
    *
-   * @param fileName The name of the file containing the adjacency matrix of
-   *                 the graph.
+   * @param fileName The name of the file containing the adjacency matrix of the
+   *                 graph.
    */
   public Matrix(String fileName) throws Exception {
-    loadMatrix(fileName); //  Load the text file into the matrix object
+    loadMatrix(fileName); // Load the text file into the matrix object
   }
 
   /**
    * Get the size of the matrix.
    * <p>
-   * The matrix is always square so which dimension doesn't matter. It
-   * returns the "width".
+   * The matrix is always square so which dimension doesn't matter. It returns the
+   * "width".
    *
    * @return Size of the matrix
    */
@@ -35,8 +52,8 @@ public class Matrix {
   /**
    * Converts a matrix text file to a Matrix object.
    *
-   * @param fileName Name of the file containing the text representation of
-   *                 the matrix
+   * @param fileName Name of the file containing the text representation of the
+   *                 matrix
    */
   private void loadMatrix(String fileName) throws Exception {
     // Create a buffered reader to read from the given file name
