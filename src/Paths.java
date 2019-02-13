@@ -107,35 +107,35 @@ public class Paths {
    * Brute force recursive algorithm to find all paths from one vertex to
    * another.
    * <p>
-   * Finds all available paths from starting node to
-   * target node. Creates a map of the results.
+   * Finds all available paths from starting vertex to
+   * target vertex. Creates a map of the results.
    *
-   * @param node         Starting node to be traversed from.
-   * @param total        Total length of the current path.
-   * @param target       Target node to be traversed to.
+   * @param vertex         Starting vertex to be traversed from.
+   * @param total        Total length of the current path (start at 0).
+   * @param target       Target vertex to be traversed to.
    * @param containerRef Container storing the path sequentially.
    */
-  public static void traverse(int node, int target, int total,
+  public static void traverse(int vertex, int target, int total,
                               List<Integer> containerRef) {
 
     // Get a copy of the containerRef, otherwise changes affect all instances
     List<Integer> container = new ArrayList<>(containerRef);
 
     // Container already has label = Cycle = No Path to Target
-    if (container.contains(node)) return;
-    else if (node == target) {    // We have reached the target node
-      container.add(node);        // Add the target node to the container
+    if (container.contains(vertex)) return;
+    else if (vertex == target) {    // We have reached the target vertex
+      container.add(vertex);        // Add the target vertex to the container
       addToMap(total, container); // Add total length and path to map
       return;
     } else {
-      container.add(node); // Otherwise, just add the label to path.
+      container.add(vertex); // Otherwise, just add the label to path.
     }
 
-    // Loop through the current node's row, navigating to each element
+    // Loop through the current vertex's row, navigating to each element
     for (int i = 0; i < matrix.size(); i++) {
       int edgeWeight;
-      if ((edgeWeight = matrix.get(node, i)) > 0) { // Edge found
-        // Navigate to new node via that edge. Increment total by edge weight
+      if ((edgeWeight = matrix.get(vertex, i)) > 0) { // Edge found
+        // Navigate to new vertex via that edge. Increment total by edge weight
         traverse(i, target, total + edgeWeight, container);
       }
     }

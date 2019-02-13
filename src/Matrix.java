@@ -65,8 +65,8 @@ public class Matrix {
   }
 
   /**
-   * Display the matrix as a String. Each row and column is shown with its
-   * node letter as label.
+   * Display the matrix as a String. Each row and column is labelled with its
+   * corresponding index number.
    *
    * @return String representation of the matrix
    */
