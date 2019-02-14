@@ -11,8 +11,8 @@
 /*    file and converts it to an object that can be         */
 /*    accessed.                                             */
 /* Language: java (8)                                       */
-/* Compilation Command: java Path.java Matrix.java          */
-/* Execution Command: java Path                             */
+/* Compilation Command: javac Paths.java Matrix.java        */
+/* Execution Command: java Paths                            */
 /************************************************************/
 
 import java.io.BufferedReader;
@@ -40,8 +40,8 @@ public class Matrix {
   /**
    * Get the size of the matrix.
    * <p>
-   * The matrix is always square so which dimension doesn't matter. It returns the
-   * "width".
+   * The matrix is always square so which dimension doesn't matter. It returns
+   * the"width".
    *
    * @return Size of the matrix
    */

@@ -13,8 +13,8 @@
 /*    Outputs the results in order from shortest to longest */
 /*    path.                                                 */
 /* Language: java (8)                                       */
-/* Compilation Command: javac Path.java Matrix.java         */
-/* Execution Command: java Path                             */
+/* Compilation Command: javac Paths.java Matrix.java         */
+/* Execution Command: java Paths                             */
 /************************************************************/
 
 import java.util.*;
@@ -45,9 +45,10 @@ public class Paths {
    * The prompt will loop until the user enters an exit command allowing them to
    * enter multiple matrices and starting/target vertices.
    */
-  private static void prompt() {
-    Scanner keyboard = new Scanner(System.in); // Scanner to console input
-    int startVertex, targetVertex, matrixSize;
+  public static void prompt() {
+    Scanner keyboard = new Scanner(System.in); // User input
+    int startVertex, targetVertex; // User's parameters
+    int matrixSize; // Loaded matrix's size
 
     while (true) {
       // Get the file name from user input
@@ -57,52 +58,68 @@ public class Paths {
         break;
       }
       // Attempt to load matrix at the given file name
-      // Restart the loop if invalid file given
       try {
         matrix = new Matrix(fileName);
         matrixSize = matrix.size();
       } catch (Exception ex) {
-        System.err.println("File Could Not Be Loaded");
+        System.out.println("File Could Not Be Loaded\n");
         continue;
       }
 
-      // Display the loaded matrix
+      // Display the loaded matrix & prompt for parameters
       System.out.println("Matrix:");
       System.out.println(matrix.toString());
-
-      // Get the starting vertex
       System.out.println("Negative vertex values exit the program.");
       System.out.print("Start Vertex (0 - " + (matrixSize - 1) + "): ");
+
+      /*
+       *  STARTING VERTEX VALIDATION
+       */
+      // Loop until next input is an integer
+      while (!keyboard.hasNextInt()) {
+        keyboard.next(); // Discard invalid value
+        System.out.print("Start vertex must be an integer...\n> ");
+      }
+
+      // Get the starting vertex
       startVertex = keyboard.nextInt();
       if (startVertex < 0) {
         System.out.println("Exiting Program...");
         break;
       }
-
       // Ensure that the given target is within the bounds, otherwise there
       // will be index errors.
       if (startVertex > matrixSize - 1) {
-        System.err.println("Index is too large. Try again.");
+        System.out.println("Index is too large. Try again.");
         keyboard.nextLine();
-        continue; // restart loop
+        continue;  // Restart the loop if invalid file given
       }
 
-      // Get the target vertex
+
+      /*
+       *  TARGET VERTEX VALIDATION
+       */
       System.out.print("Target Vertex (0 - " + (matrixSize - 1) + "): ");
+      // Loop until next input is an integer
+      while (!keyboard.hasNextInt()) {
+        keyboard.next(); // Discard invalid value
+        System.out.print("Target vertex must be an integer...\n> ");
+      }
+      // Get the target vertex
       targetVertex = keyboard.nextInt();
       if (targetVertex < 0) {
         System.out.println("Exiting Program...");
         break;
       }
-
       // Ensure that the given target is within the bounds, otherwise there
       // will be index errors.
       if (targetVertex > matrixSize - 1) {
-        System.err.println("Index is too large. Try again.");
+        System.out.println("Index is too large. Try again.");
         keyboard.nextLine();
         continue; // restart loop
       }
       keyboard.nextLine();
+
 
       // Call the recursive algorithm at the index of the starting vertex
       // Starting total is initialized to 0
@@ -116,7 +133,7 @@ public class Paths {
       // Reset the map before loading next run
       map.clear();
     }
-    keyboard.close();
+    keyboard.close(); // Close scanner when done
   }
 
   /**
@@ -130,7 +147,8 @@ public class Paths {
    * @param target       Target vertex to be traversed to.
    * @param containerRef Container storing the path sequentially.
    */
-  public static void traverse(int vertex, int target, int total, List<Integer> containerRef) {
+  private static void traverse(int vertex, int target, int total,
+                         List<Integer> containerRef) {
 
     // Get a copy of the containerRef, otherwise changes affect all instances
     List<Integer> container = new ArrayList<>(containerRef);
@@ -146,11 +164,11 @@ public class Paths {
       container.add(vertex); // Otherwise, just add the label to path.
     }
 
-    // Loop through the current vertex's row, navigating to each element
+    // Loop through the current vertex's row, navigating to each element > 0
     for (int i = 0; i < matrix.size(); i++) {
       int edgeWeight;
       if ((edgeWeight = matrix.get(vertex, i)) > 0) { // Edge found
-        // Navigate to new vertex via that edge. Increment total by edge weight
+        // Navigate to new vertex via edge. Increment total by edge weight
         traverse(i, target, total + edgeWeight, container);
       }
     }
@@ -170,8 +188,6 @@ public class Paths {
       // Map already contains an entry, so add to existing List
       if (!map.get(total).contains(container)) {
         map.get(total).add(container);
-      } else {
-        System.err.println("MAP DUPLICATE");
       }
     } else {
       // Map doesn't contain entry. Create new 2D List
@@ -184,8 +200,8 @@ public class Paths {
   /**
    * Stringify the map in an easy-to-read format.
    * <p>
-   * Shows the path length (key) on the left with the sequential paths on the
-   * right. The output is displayed from shortest to longest path.
+   * Shows the path cost (key) on the left with the sequential paths on the
+   * right. The output is displayed from lowest to highest cost.
    *
    * @return Formatted string.
    */
@@ -205,7 +221,7 @@ public class Paths {
 
     // Loop through sorted map. Generating a stylized string.
     sortedMap.forEach((k, v) -> {
-      sb.append("Length ");
+      sb.append("Cost ");
       sb.append(k);
       sb.append(":\n");
       v.forEach(list -> {
