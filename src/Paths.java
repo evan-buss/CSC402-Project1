@@ -13,8 +13,16 @@
 /*    Outputs the results in order from shortest to longest */
 /*    path.                                                 */
 /* Language: java (8)                                       */
-/* Compilation Command: javac Paths.java Matrix.java         */
-/* Execution Command: java Paths                             */
+/* Compilation Command: javac Paths.java Matrix.java        */
+/* Execution Command: java Paths                            */
+/************************************************************/
+
+/************************************************************/
+/* GRADE: 25/25                                             */
+/* NOTES: Make sure to get approval before using Java       */
+/*        Make sure to read specs to know what to include in*/
+/*          readme.                                         */
+/*        prompt() function is very long... (will fix)      */
 /************************************************************/
 
 import java.util.*;
@@ -70,56 +78,17 @@ public class Paths {
       System.out.println("Matrix:");
       System.out.println(matrix.toString());
       System.out.println("Negative vertex values exit the program.");
+
       System.out.print("Start Vertex (0 - " + (matrixSize - 1) + "): ");
-
-      /*
-       *  STARTING VERTEX VALIDATION
-       */
-      // Loop until next input is an integer
-      while (!keyboard.hasNextInt()) {
-        keyboard.next(); // Discard invalid value
-        System.out.print("Start vertex must be an integer...\n> ");
+      if ((startVertex = getVertex(keyboard, matrixSize)) == -1) {
+        continue;
       }
 
-      // Get the starting vertex
-      startVertex = keyboard.nextInt();
-      if (startVertex < 0) {
-        System.out.println("Exiting Program...");
-        break;
-      }
-      // Ensure that the given target is within the bounds, otherwise there
-      // will be index errors.
-      if (startVertex > matrixSize - 1) {
-        System.out.println("Index is too large. Try again.");
-        keyboard.nextLine();
-        continue;  // Restart the loop if invalid file given
-      }
-
-
-      /*
-       *  TARGET VERTEX VALIDATION
-       */
       System.out.print("Target Vertex (0 - " + (matrixSize - 1) + "): ");
-      // Loop until next input is an integer
-      while (!keyboard.hasNextInt()) {
-        keyboard.next(); // Discard invalid value
-        System.out.print("Target vertex must be an integer...\n> ");
-      }
-      // Get the target vertex
-      targetVertex = keyboard.nextInt();
-      if (targetVertex < 0) {
-        System.out.println("Exiting Program...");
-        break;
-      }
-      // Ensure that the given target is within the bounds, otherwise there
-      // will be index errors.
-      if (targetVertex > matrixSize - 1) {
-        System.out.println("Index is too large. Try again.");
-        keyboard.nextLine();
-        continue; // restart loop
+      if ((targetVertex = getVertex(keyboard, matrixSize)) == -1) {
+        continue;
       }
       keyboard.nextLine();
-
 
       // Call the recursive algorithm at the index of the starting vertex
       // Starting total is initialized to 0
@@ -134,6 +103,41 @@ public class Paths {
       map.clear();
     }
     keyboard.close(); // Close scanner when done
+  }
+
+  /**
+   * Gets the user's desired vertex parameter from the console.
+   * <p>
+   * Ensures that the user enters a valid integer and returns the value.
+   *
+   * @param keyboard   Scanner to get user input
+   * @param matrixSize Size of the matrix
+   * @return The user's vertex number or -1 if the user enters invalid value
+   * (value too large for matrix size)
+   */
+  private static int getVertex(Scanner keyboard, int matrixSize) {
+
+    // Loop until next input is an integer
+    while (!keyboard.hasNextInt()) {
+      keyboard.next(); // Discard invalid value
+      System.out.print("Vertex must be an integer...\n> ");
+    }
+    // Get the starting vertex
+    int startVertex = keyboard.nextInt();
+
+    if (startVertex < 0) {
+      System.out.println("Exiting Program...");
+      System.exit(0);
+    }
+    // Ensure that the given target is within the bounds, otherwise there
+    // will be index errors.
+    if (startVertex > matrixSize - 1) {
+      System.out.println("Index is too large. Try again.");
+      keyboard.nextLine();
+      return -1;
+    }
+
+    return startVertex;
   }
 
   /**
